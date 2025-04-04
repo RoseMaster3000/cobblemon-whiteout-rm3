@@ -5,4 +5,4 @@
 # Edge Case Features
 * If a player forfeits, it is considered a loss
 * If a player disconnecs during a battle, it is considered a loss
-* Players can not do minecraft damage to eachother during battles
+* Players are invincible during battles (but lose this perk if they hit anything)
