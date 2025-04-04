@@ -1,5 +1,5 @@
 # Base Features
-* Makes you whiteout (die) when you lose all your pokemon in a wild battle (you should flee! this will tirgger heart drops)
+* Makes you whiteout (die) when you lose all your pokemon in a wild battle (you should flee to avoid losing max hp!)
 * It also tirggers a wager (heart deposit) when you start a battle with another player (the wager is calculated == to what the death of the weaker player would do)
 * When the battle finsihes, the winner gets all the wagers
 # Edge Case Features
