@@ -8,11 +8,41 @@ group = property("maven_group")!!
 version = property("mod_version")!!
 
 repositories {
+    // Keep existing ones using preferred shorthand
     mavenLocal()
     mavenCentral()
-    maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
-    maven("https://maven.impactdev.net/repository/development/")
-    maven("https://api.modrinth.com/maven")
+    maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/") // GeckoLib
+    maven("https://maven.impactdev.net/repository/development/")     // ImpactDev
+    maven("https://api.modrinth.com/maven")                          // Modrinth
+
+    // Added repositories using Kotlin DSL
+    maven("https://maven.parchmentmc.org")
+    maven {
+        name = "Ladysnake Mods" // Use property assignment for name
+        url = uri("https://maven.ladysnake.org/releases") // Use url = uri(...)
+    }
+    maven("https://jm.gserv.me/repository/maven-public/")
+    maven {
+        name = "Fuzs Mod Resources"
+        url = uri("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
+    }
+    // CurseMaven in Kotlin DSL:
+    maven {
+        url = uri("https://www.cursemaven.com")
+        content {
+            includeGroup("curse.maven")
+        }
+    }
+    maven {
+        name = "Jared's maven"
+        url = uri("https://maven.blamejared.com/")
+    }
+    maven {
+        name = "ModMaven"
+        url = uri("https://modmaven.dev")
+    }
+    maven("https://jitpack.io")
+    maven("https://maven.fabricmc.net/")
 }
 
 dependencies {
@@ -28,6 +58,9 @@ dependencies {
 
     // Cobblemon
     modImplementation("com.cobblemon:fabric:${property("cobblemon_version")}")
+
+    // Lifesteal > gradle publishToMavenLocal
+    modImplementation("mc.mian:lifesteal-fabric:${property("lifesteal_version")}")
 }
 
 tasks {
