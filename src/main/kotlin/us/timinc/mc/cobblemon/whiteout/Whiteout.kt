@@ -6,20 +6,16 @@ import mc.mian.lifesteal.api.PlayerImpl
 import com.cobblemon.mod.common.api.battles.model.actor.ActorType
 import com.cobblemon.mod.common.api.events.CobblemonEvents
 import com.cobblemon.mod.common.api.events.battles.BattleFaintedEvent
-import com.cobblemon.mod.common.api.events.battles.BattleFledEvent // Keep if you uncomment handleForfeit
 import com.cobblemon.mod.common.api.events.battles.BattleStartedPreEvent
 import com.cobblemon.mod.common.api.events.battles.BattleVictoryEvent
 import com.cobblemon.mod.common.battles.actor.PlayerBattleActor
-import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.util.server
-// import com.cobblemon.mod.common.api.events.battles.BattleVictoryEvent // Keep if you uncomment handleVictory
-// import com.cobblemon.mod.common.entity.pokemon.PokemonEntity // Not directly used but good context
+
 
 // Minecraft/Fabric Imports
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
-import net.fabricmc.fabric.impl.`object`.builder.FabricEntityTypeImpl.Builder.Living
 import net.minecraft.entity.LivingEntity // Base type for owners
 import net.minecraft.server.network.ServerPlayerEntity // Specific player type needed
 
@@ -119,11 +115,16 @@ object Whiteout : ModInitializer {
         LOGGER.info("Settling PvP wager for winner ${winner.name.string} against ${loser.name.string}")
         try {
             val winnerImpl = winner as? PlayerImpl
+            val loserImpl = loser as? PlayerImpl
+            if (loserImpl != null) {
+                loserImpl.wager = -1
+            }
             if (winnerImpl != null) {
                 // winner get their wager back + opponent's wager (wager times 2)
                 val heartsWon = winnerImpl.wager * 2
+                winnerImpl.wager = -1
                 winnerImpl.gainHearts(heartsWon)
-                LOGGER.debug("Awarded 4 hearts to ${winner.name.string}")
+                LOGGER.debug("Awarded $heartsWon hearts to ${winner.name.string}")
             } else {
                 LOGGER.warn("Winner ${winner.name.string} could not be cast to PlayerImpl (Lifesteal API). Cannot award hearts.")
             }
@@ -156,10 +157,15 @@ object Whiteout : ModInitializer {
             if (opponentPlayer != null) {
                 try {
                     val opponentImpl = opponentPlayer as? PlayerImpl
+                    val abandoningImpl = abandoningPlayer as? PlayerImpl
+                    if (abandoningImpl != null) {
+                        abandoningImpl.wager = -1
+                    }
                     if (opponentImpl != null) {
                         // winner (opponent) get their wager back + opponent's wager (wager times 2)
                         val heartsWon = opponentImpl.wager * 2
                         opponentImpl.gainHearts(heartsWon)
+                        opponentImpl.wager = -1
                         LOGGER.info("Awarded 4 hearts to ${opponentPlayer.name.string} due to opponent disconnecting.")
                     } else {
                         LOGGER.warn("Opponent ${opponentPlayer.name.string} could not be cast to PlayerImpl (Lifesteal API). Cannot award hearts on disconnect.")
