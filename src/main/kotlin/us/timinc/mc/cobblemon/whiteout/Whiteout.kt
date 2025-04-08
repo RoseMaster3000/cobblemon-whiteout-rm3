@@ -62,6 +62,20 @@ object Whiteout : ModInitializer {
             val playerBImpl = playerB as? PlayerImpl
 
             if (playerAImpl != null && playerBImpl != null) {
+
+                // If either player is in a wager (different battle / mahjong / etc)
+                // CANCEL the battle
+                if (playerAImpl.wager != -1){
+                    playerAImpl.sendScreenMessage("You are gambling elsewhere!")
+                }
+                if (playerBImpl.wager != -1){
+                    playerBImpl.sendScreenMessage("You are gambling elsewhere!")
+                }
+                if (playerAImpl.wager != -1 || playerBImpl.wager != -1){
+                    battleStartedPreEvent.cancel()
+                    return
+                }
+
                 try {
                     LOGGER.info("Starting PvP wager between ${playerA.name.string} and ${playerB.name.string}")
                     val heartWager = playerA.suggestWager().coerceAtMost(playerB.suggestWager()); // choose minimum wager
