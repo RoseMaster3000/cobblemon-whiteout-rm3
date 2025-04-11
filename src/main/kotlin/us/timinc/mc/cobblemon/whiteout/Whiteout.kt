@@ -58,20 +58,6 @@ object Whiteout : ModInitializer {
             val playerBImpl = playerB as? PlayerImpl
 
             if (playerAImpl != null && playerBImpl != null) {
-
-                // If either player is in a wager (different battle / mahjong / etc)
-                // CANCEL the battle
-                if (playerAImpl.wager != -1){
-                    playerAImpl.sendScreenMessage("You are gambling elsewhere!")
-                }
-                if (playerBImpl.wager != -1){
-                    playerBImpl.sendScreenMessage("You are gambling elsewhere!")
-                }
-                if (playerAImpl.wager != -1 || playerBImpl.wager != -1){
-                    battleStartedPreEvent.cancel()
-                    return
-                }
-
                 try {
                     LOGGER.info("Starting PvP wager between ${playerA.name.string} and ${playerB.name.string}")
                     val heartWager = playerA.suggestWager().coerceAtMost(playerB.suggestWager()); // choose minimum wager
@@ -116,13 +102,10 @@ object Whiteout : ModInitializer {
         try {
             val winnerImpl = winner as? PlayerImpl
             val loserImpl = loser as? PlayerImpl
-            if (loserImpl != null) {
-                loserImpl.wager = -1
-            }
+
             if (winnerImpl != null) {
                 // winner get their wager back + opponent's wager (wager times 2)
                 val heartsWon = winnerImpl.wager * 2
-                winnerImpl.wager = -1
                 winnerImpl.gainHearts(heartsWon)
                 LOGGER.debug("Awarded $heartsWon hearts to ${winner.name.string}")
             } else {
@@ -157,15 +140,12 @@ object Whiteout : ModInitializer {
             if (opponentPlayer != null) {
                 try {
                     val opponentImpl = opponentPlayer as? PlayerImpl
-                    val abandoningImpl = abandoningPlayer as? PlayerImpl
-                    if (abandoningImpl != null) {
-                        abandoningImpl.wager = -1
-                    }
+                    //val abandoningImpl = abandoningPlayer as? PlayerImpl
+
                     if (opponentImpl != null) {
                         // winner (opponent) get their wager back + opponent's wager (wager times 2)
                         val heartsWon = opponentImpl.wager * 2
                         opponentImpl.gainHearts(heartsWon)
-                        opponentImpl.wager = -1
                         LOGGER.info("Awarded 4 hearts to ${opponentPlayer.name.string} due to opponent disconnecting.")
                     } else {
                         LOGGER.warn("Opponent ${opponentPlayer.name.string} could not be cast to PlayerImpl (Lifesteal API). Cannot award hearts on disconnect.")
